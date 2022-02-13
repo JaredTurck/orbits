@@ -24,22 +24,24 @@ sprites = pygame.sprite.Group()
 
 # load planets
 background = pygame.transform.scale(pygame.image.load("background.png"), (1000, 1000)) # load background
+au_units = 149_597_870.7
 planet_names = {
-    "Mercury" : [47.4,  360 - 240],
-    "Venus" :   [35.0,  360 - 0],
-    "Earth" :   [29.8,  360 - 80],
-    "Mars" :    [24.1,  360 - 80],
-    "Jupiter" : [13.1,  360 - 250],
-    "Saturn" :  [9.7,   360 - 20],
-    "Uranus" :  [6.8,   360 - 190],
-    "Neptune" : [5.4,   360 - 230]
+    #           length of year      # degrees
+    "Mercury" : [365 / 88,          360 - 240],
+    "Venus" :   [365 / 224.7,       360 - 0],
+    "Earth" :   [365 / 365.2564,    360 - 80],
+    "Mars" :    [365 / 687,         360 - 80],
+    "Jupiter" : [365 / 4332.59,     360 - 250],
+    "Saturn" :  [365 / 10759,       360 - 20],
+    "Uranus" :  [365 / 30688.5,     360 - 190],
+    "Neptune" : [365 / 60182,       360 - 230]
 }
 sun = pygame.transform.scale(pygame.image.load("sun.png"), (50, 50)) # load sun
 planets = [Planet(screen_rect.center, value[0], (i*50)+50, value[1][0], value[1][1], sprites) 
             for i,value in enumerate(planet_names.items())]
 
 velocity_multipler = 0
-refrence_point = datetime.datetime(2007, 12, 27, 6, 50)
+refrence_point = datetime.datetime(2007, 12, 28)
 txt1 = pygame.font.SysFont("Arial", 20).render("-speed", True, (0, 20, 52))
 txt2 = pygame.font.SysFont("Arial", 20).render("+speed", True, (0, 20, 52))
 text = ""
@@ -53,12 +55,9 @@ while True:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if 25 <= mouse[0] <= 105 and 800 <= mouse[1] <= 825:
-                if velocity_multipler == 0.0006849315068493151: velocity_multipler = 0
-                elif velocity_multipler == 0.010273972602739725:  velocity_multipler = 0.0006849315068493151
-                else: velocity_multipler = max(0, velocity_multipler - 0.010273972602739725)
+                velocity_multipler = max(0, velocity_multipler - 0.1)
             elif 125 <= mouse[0] <= 208 and 800 <= mouse[1] <= 825:
-                if velocity_multipler == 0: velocity_multipler = 0.0006849315068493151
-                else: velocity_multipler = max(0, velocity_multipler + 0.010273972602739725)
+                velocity_multipler = max(0, velocity_multipler + 0.1)
         
         elif event.type == pygame.KEYDOWN:
             if fast_forward == False:
@@ -99,7 +98,7 @@ while True:
             target_angle = 0
     
     # current date
-    current_date = refrence_point + datetime.timedelta(days = (planets[2].angle / 360) * 365)
+    current_date = refrence_point + datetime.timedelta(days = ((planets[2].angle - 280) / 360) * 365)
     date_text = pygame.font.SysFont("Arial Black", 30).render(current_date.strftime("%d %B %Y %H:%M").ljust(25), True, (0, 161, 35))
     screen.blit(date_text, (240, 5))
 
